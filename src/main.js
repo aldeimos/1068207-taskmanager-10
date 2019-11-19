@@ -34,14 +34,14 @@ const createSiteMenuTemplate = () => {
   );
 };
 
-const createSearchFormTemplate = () => {
+/* const createSearchFormTemplate = () => {
   return (`
   <section class="main__search search container">
     <input type="text" id="search__input" class="search__input" placeholder="START TYPING — SEARCH BY WORD, #HASHTAG OR DATE">
     <label class="visually-hidden" for="search__input">Search</label>
   </section>
   `);
-};
+}; */
 
 const createSiteFilterTemplate = () => {
   return (`
@@ -474,18 +474,22 @@ const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = document.querySelector(`.main__control`);
 
 render(siteHeaderElement, createSiteMenuTemplate());
-render(siteMainElement, createSearchFormTemplate());
+/* render(siteMainElement, createSearchFormTemplate()); */
 render(siteMainElement, createSiteFilterTemplate());
 render(siteMainElement, createBoardTemplate());
 
 const siteTaskBoard = siteMainElement.querySelector(`.board__tasks`);
 
-for (let i = 0; i < RENDER_COUNT; i++) {
+const repeat = (count, fn) => {
+  Array(count).fill(``).forEach(fn);
+};
+
+repeat(RENDER_COUNT, () => {
   render(siteTaskBoard, createTaskTemplate(), `afterbegin`);
-}
+});
 
 render(siteTaskBoard, createTaskEditTemplate(), `afterbegin`);
 
 const siteBoard = siteMainElement.querySelector(`.board`);
 
-render(siteBoard, createLoadMoreButtonTemplate(), `beforeend`);
+render(siteBoard, createLoadMoreButtonTemplate());
