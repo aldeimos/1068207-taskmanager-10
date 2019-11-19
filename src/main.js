@@ -34,6 +34,15 @@ const createSiteMenuTemplate = () => {
   );
 };
 
+const createSearchFormTemplate = () => {
+  return (`
+  <section class="main__search search container">
+    <input type="text" id="search__input" class="search__input" placeholder="START TYPING — SEARCH BY WORD, #HASHTAG OR DATE">
+    <label class="visually-hidden" for="search__input">Search</label>
+  </section>
+  `);
+};
+
 const createSiteFilterTemplate = () => {
   return (`
         <section class="main__filter filter container">
@@ -465,8 +474,9 @@ const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = document.querySelector(`.main__control`);
 
 render(siteHeaderElement, createSiteMenuTemplate());
-render(siteHeaderElement, createBoardTemplate(), `afterend`);
-render(siteHeaderElement, createSiteFilterTemplate(), `afterend`);
+render(siteMainElement, createSearchFormTemplate());
+render(siteMainElement, createSiteFilterTemplate());
+render(siteMainElement, createBoardTemplate());
 
 const siteTaskBoard = siteMainElement.querySelector(`.board__tasks`);
 
