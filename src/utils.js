@@ -1,7 +1,3 @@
-const getRandomInt = (int) => {
-  return Math.floor(Math.random() * int);
-};
-
 const getRandomIntegerFromGap = (min, max) => {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
@@ -27,7 +23,6 @@ const formatTime = (date) => {
 };
 
 export {
-  getRandomInt,
   getRandomIntegerFromGap,
   getRandomArrayItem,
   formatTime,

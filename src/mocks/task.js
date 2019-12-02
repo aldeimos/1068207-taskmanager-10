@@ -1,13 +1,18 @@
-import {getRandomArrayItem, getRandomIntegerFromGap} from '../utils.js';
-import {colors} from '../const.js';
+import {
+  getRandomArrayItem,
+  getRandomIntegerFromGap
+} from '../utils.js';
+import {
+  colors
+} from '../const.js';
 
-const DescriptionItems = [
+const descriptionItems = [
   `Изучить теорию`,
   `Сделать домашку`,
   `Пройти интенсив на соточку`,
 ];
 
-const DefaultRepeatingDays = {
+const defaultRepeatingDays = {
   'mo': false,
   'tu': false,
   'we': false,
@@ -17,7 +22,7 @@ const DefaultRepeatingDays = {
   'su': false,
 };
 
-const Tags = [
+const tags = [
   `homework`,
   `theory`,
   `practice`,
@@ -36,20 +41,14 @@ const getRandomDate = () => {
   return targetDate;
 };
 
-const generateRepeatingDays = () => {
-  return Object.assign({}, DefaultRepeatingDays, {
-    'mo': Math.random() > 0.5,
-    'tu': Math.random() > 0.5,
-    'we': Math.random() > 0.5,
-    'th': Math.random() > 0.5,
-    'fr': Math.random() > 0.5,
-    'sa': Math.random() > 0.5,
-    'su': Math.random() > 0.5,
-  });
-};
+const generateRepeatingDays = () =>
+  Object.keys(defaultRepeatingDays).reduce((acc, cur) =>
+    Object.assign(acc, {
+      [cur]: Math.random() > 0.5
+    }), {});
 
-const generateTags = (tags) => {
-  return tags
+const generateTags = (tagsList) => {
+  return tagsList
     .filter(() => Math.random() > 0.5)
     .slice(0, 3);
 };
@@ -58,10 +57,10 @@ const generateTask = () => {
   const dueDate = Math.random() > 0.5 ? null : getRandomDate();
 
   return {
-    description: getRandomArrayItem(DescriptionItems),
+    description: getRandomArrayItem(descriptionItems),
     dueDate,
-    repeatingDays: dueDate ? DefaultRepeatingDays : generateRepeatingDays(),
-    tags: new Set(generateTags(Tags)),
+    repeatingDays: dueDate ? defaultRepeatingDays : generateRepeatingDays(),
+    tags: new Set(generateTags(tags)),
     color: getRandomArrayItem(colors),
     isFavorite: Math.random() > 0.5,
     isArchive: Math.random() > 0.5,
@@ -74,4 +73,7 @@ const generateTasks = (count) => {
     .map(generateTask);
 };
 
-export {generateTask, generateTasks};
+export {
+  generateTask,
+  generateTasks
+};
