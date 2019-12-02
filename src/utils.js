@@ -3,12 +3,11 @@ const getRandomInt = (int) => {
 };
 
 const getRandomIntegerFromGap = (min, max) => {
-  let rand = min + Math.random() * (max - min);
-  return Math.floor(rand);
+  return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
 const getRandomArrayItem = (array) => {
-  const randomIndex = getRandomIntegerFromGap(0, array.length);
+  const randomIndex = getRandomIntegerFromGap(0, array.length - 1);
 
   return array[randomIndex];
 };

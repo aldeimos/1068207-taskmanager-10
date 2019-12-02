@@ -1,7 +1,7 @@
-import {Colors, Days, MonthNames} from '../const.js';
+import {colors, Days, MonthNames} from '../const.js';
 import {formatTime} from '../utils.js';
 
-const createColorsMarkup = (colors, currentColor) => {
+const createColorsMarkup = (colorsList, currentColor) => {
   return colors
     .map((color) => {
       return (
@@ -84,7 +84,7 @@ export const createTaskEditTemplate = (task) => {
   const deadlineClass = isExpired ? `card--deadline` : ``;
 
   const tagsMarkup = createHashtags(tags);
-  const colorsMarkup = createColorsMarkup(Colors, color);
+  const colorsMarkup = createColorsMarkup(colors, color);
   const repeatingDaysMarkup = createRepeatingDaysMarkup(Days, repeatingDays);
 
   return (
