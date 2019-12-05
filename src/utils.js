@@ -1,3 +1,8 @@
+const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
 const getRandomIntegerFromGap = (min, max) => {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
@@ -22,9 +27,30 @@ const formatTime = (date) => {
   return `${hours}:${minutes} ${interval}`;
 };
 
+const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+const createElement = (template) => {
+  const element = document.createElement(`div`);
+  element.innerHTML = template;
+  return element.firstChild;
+};
+
+
 export {
   getRandomIntegerFromGap,
   getRandomArrayItem,
   formatTime,
-  castTimeFormat
+  castTimeFormat,
+  createElement,
+  RenderPosition,
+  render
 };
