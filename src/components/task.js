@@ -97,7 +97,7 @@ export default class Task {
     }
     return this._element;
   }
-  remoteElement() {
+  removeElement() {
     this._element = null;
   }
 }
