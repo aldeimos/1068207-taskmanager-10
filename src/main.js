@@ -4,6 +4,7 @@ import TaskEditComponent from './components/task-edit.js';
 import TaskComponent from './components/task.js';
 import FilterComponent from './components/filter.js';
 import SiteMenuComponent from './components/site-menu.js';
+import AlertComponent from './components/alert.js';
 import {generateTasks} from './mocks/task.js';
 import {generateFilters} from './mocks/filter.js';
 import {render, RenderPosition} from './utils.js';
@@ -16,6 +17,7 @@ render(siteHeaderElement, new SiteMenuComponent().getElement(), RenderPosition.B
 const tasks = generateTasks(RENDER_COUNT);
 const filters = generateFilters(tasks);
 render(siteMainElement, new FilterComponent(filters).getElement(), RenderPosition.BEFOREEND);
+
 render(siteMainElement, new BoardComponent().getElement(), RenderPosition.BEFOREEND);
 const boardElement = siteMainElement.querySelector(`.board`);
 const taskListElement = siteMainElement.querySelector(`.board__tasks`);
@@ -26,18 +28,43 @@ const renderTask = (task) => {
   const taskComponent = new TaskComponent(task);
   const taskEditComponent = new TaskEditComponent(task);
 
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      replaceEditToTask();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
   const editButton = taskComponent.getElement().querySelector(`.card__btn--edit`);
-  editButton.addEventListener(`click`, () => {
+  const replaceEditToTask = () => {
+    taskListElement.replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+  };
+  const replaceTaskToEdit = () => {
     taskListElement.replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
-  });
+  };
 
   const editForm = taskEditComponent.getElement().querySelector(`form`);
-  editForm.addEventListener(`submit`, () => {
-    taskListElement.replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+  editForm.addEventListener(`submit`, replaceEditToTask);
+  editButton.addEventListener(`click`, () => {
+    replaceTaskToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   render(taskListElement, taskComponent.getElement(), RenderPosition.BEFOREEND);
 };
+
+const checkTasksStatus = (items) => {
+  const status = items.every((it) => it.isDone === true);
+  if (status) {
+    const alertComponent = new AlertComponent().getElement();
+    boardElement.replaceChild(alertComponent, taskListElement);
+    loadMoreButton.remove();
+  }
+};
+
+checkTasksStatus(tasks);
 
 let visibleTasks = 8;
 tasks.slice(0, visibleTasks).forEach((task) => renderTask(task));
