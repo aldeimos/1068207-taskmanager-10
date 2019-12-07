@@ -64,6 +64,7 @@ const generateTask = () => {
     color: getRandomArrayItem(colors),
     isFavorite: Math.random() > 0.5,
     isArchive: Math.random() > 0.5,
+    isDone: Math.random() > 0.5,
   };
 };
 
