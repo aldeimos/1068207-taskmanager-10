@@ -37,6 +37,11 @@ const renderTask = (task) => {
     }
   };
 
+  const onEditButtonClick = () => {
+    replaceTaskToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
+  };
+
   const editButton = taskComponent.getElement().querySelector(`.card__btn--edit`);
   const replaceEditToTask = () => {
     taskListElement.replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
@@ -47,10 +52,7 @@ const renderTask = (task) => {
 
   const editForm = taskEditComponent.getElement().querySelector(`form`);
   editForm.addEventListener(`submit`, replaceEditToTask);
-  editButton.addEventListener(`click`, () => {
-    replaceTaskToEdit();
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
+  editButton.addEventListener(`click`, onEditButtonClick);
 
   render(taskListElement, taskComponent.getElement(), RenderPosition.BEFOREEND);
 };
