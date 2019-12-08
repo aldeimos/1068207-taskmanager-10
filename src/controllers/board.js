@@ -2,7 +2,7 @@ import TaskComponent from '../components/task.js';
 import TaskEditComponent from '../components/task-edit.js';
 import AlertComponent from '../components/alert.js';
 import LoadMoreButton from '../components/load-more-button.js';
-import {RenderPosition, render} from '../utils.js';
+import {RenderPosition, render, replace, remove} from '../utils/render.js';
 
 const renderTask = (taskList, task) => {
   const taskComponent = new TaskComponent(task);
@@ -23,13 +23,13 @@ const renderTask = (taskList, task) => {
   };
 
   const replaceEditToTask = () => {
-    taskList.replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+    replace(taskComponent, taskEditComponent);
   };
   const replaceTaskToEdit = () => {
-    taskList.replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
+    replace(taskEditComponent, taskComponent);
   };
 
-  taskEditComponent.setSumbitButtonClickHandler(replaceEditToTask);
+  taskEditComponent.setSubmitButtonClickHandler(replaceEditToTask);
   taskComponent.setEditButtonClickHandler(onEditButtonClick);
 
   render(taskList, taskComponent.getElement(), RenderPosition.BEFOREEND);
@@ -69,8 +69,7 @@ export default class Board {
       taskListElement.innerHTML = ``;
       tasks.slice(0, visibleTasks).forEach((task) => renderTask(taskListElement, task));
       if (visibleTasks === RENDER_COUNT) {
-        this._loadMoreButton.getElement().remove();
-        this._loadMoreButton.removeElement();
+        remove(this._loadMoreButton);
       }
     };
 

@@ -4,7 +4,7 @@ import BoardComponent from './components/board.js';
 import BoardController from './controllers/board.js';
 import {generateTasks} from './mocks/task.js';
 import {generateFilters} from './mocks/filter.js';
-import {render, RenderPosition} from './utils.js';
+import {render, RenderPosition} from './utils/render.js';
 
 const RENDER_COUNT = 22;
 const tasks = generateTasks(RENDER_COUNT);

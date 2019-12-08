@@ -1,10 +1,5 @@
-import {
-  getRandomArrayItem,
-  getRandomIntegerFromGap
-} from '../utils.js';
-import {
-  colors
-} from '../const.js';
+import {getRandomArrayItem, getRandomIntegerFromGap} from '../utils/common.js';
+import {colors} from '../const.js';
 
 const descriptionItems = [
   `Изучить теорию`,
