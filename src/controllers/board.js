@@ -2,7 +2,9 @@ import TaskComponent from '../components/task.js';
 import TaskEditComponent from '../components/task-edit.js';
 import AlertComponent from '../components/alert.js';
 import LoadMoreButton from '../components/load-more-button.js';
+
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
+import {Sort, SortType} from '../components/sort.js';
 
 const renderTask = (taskList, task) => {
   const taskComponent = new TaskComponent(task);
@@ -38,7 +40,7 @@ const renderTask = (taskList, task) => {
 export default class Board {
   constructor(container) {
     this._container = container;
-
+    this._sort = new Sort();
     this._alert = new AlertComponent();
     this._task = new TaskComponent();
     this._loadMoreButton = new LoadMoreButton();
@@ -48,6 +50,7 @@ export default class Board {
     const RENDER_COUNT = renderCount;
     let visibleTasks = 8;
     const taskListElement = container.getElement().querySelector(`.board__tasks`);
+    render(this._container.getElement(), this._sort.getElement(), RenderPosition.AFTERBEGIN);
 
     const checkTasksStatus = (items) => {
       const status = items.every((it) => it.isDone === true);
@@ -56,24 +59,55 @@ export default class Board {
         container.getElement().replaceChild(alertComponent, taskListElement);
         return;
       }
+    };
+
+    const renderLoadMoreButton = () => {
+      if (visibleTasks >= tasks.length) {
+        return;
+      }
       render(container.getElement(), this._loadMoreButton.getElement(), RenderPosition.BEFOREEND);
+      const onShowMoreTasksButtonClick = () => {
+        let tasksToShow = RENDER_COUNT - visibleTasks;
+        visibleTasks += tasksToShow > 8 ? 8 : tasksToShow;
+        taskListElement.innerHTML = ``;
+        tasks.slice(0, visibleTasks).forEach((task) => renderTask(taskListElement, task));
+        if (visibleTasks === RENDER_COUNT) {
+          remove(this._loadMoreButton);
+        }
+      };
+      this._loadMoreButton.setClickHandler(onShowMoreTasksButtonClick);
     };
 
     checkTasksStatus(tasks);
 
     tasks.slice(0, visibleTasks).forEach((task) => renderTask(taskListElement, task));
+    renderLoadMoreButton();
 
-    const onShowMoreTasksButtonClick = () => {
-      let tasksToShow = RENDER_COUNT - visibleTasks;
-      visibleTasks += tasksToShow > 8 ? 8 : tasksToShow;
+
+    this._sort.setSortTypeChangeHandler((sortType) => {
+      let sortedTasks = [];
+      switch (sortType) {
+        case SortType.DATE_UP:
+          sortedTasks = tasks.slice().sort((a, b) => a.dueDate - b.dueDate);
+          break;
+        case SortType.DATE_DOWN:
+          sortedTasks = tasks.slice().sort((a, b) => b.dueDate - a.dueDate);
+          break;
+        case SortType.DEFAULT:
+          sortedTasks = tasks.slice(0, visibleTasks);
+          break;
+      }
+
       taskListElement.innerHTML = ``;
-      tasks.slice(0, visibleTasks).forEach((task) => renderTask(taskListElement, task));
-      if (visibleTasks === RENDER_COUNT) {
+      sortedTasks.forEach((task) => renderTask(taskListElement, task));
+
+      if (sortType === SortType.DEFAULT) {
+        visibleTasks = 8;
+        renderLoadMoreButton();
+      } else {
         remove(this._loadMoreButton);
       }
-    };
-
-    this._loadMoreButton.setClickHandler(onShowMoreTasksButtonClick);
+    });
   }
 }
 
