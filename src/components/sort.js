@@ -25,7 +25,7 @@ class Sort extends AbstractComponent {
     return createSortTemplate();
   }
   setSortTypeChangeHandler(handler) {
-    this.getElement().addEventListener(`click`, (evt) => {
+    this.getElement().addEventListener(`click`, (evt) => { // Не совсем понял, как работает этот метод. Можешь объяснить подробнее?
       evt.preventDefault();
 
       if (evt.target.tagName !== `A`) {
