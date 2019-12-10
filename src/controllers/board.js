@@ -37,6 +37,10 @@ const renderTask = (taskList, task) => {
   render(taskList, taskComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
+const renderTasks = (taskList, tasks) => {
+  tasks.forEach((task) => renderTask(taskList, task));
+};
+
 export default class Board {
   constructor(container) {
     this._container = container;
@@ -48,7 +52,6 @@ export default class Board {
   render(tasks, renderCount) {
     const container = this._container;
     const RENDER_COUNT = renderCount;
-    const startCardsAmount = 8;
     let visibleTasks = 8;
     const taskListElement = container.getElement().querySelector(`.board__tasks`);
     render(this._container.getElement(), this._sort.getElement(), RenderPosition.AFTERBEGIN);
@@ -62,31 +65,29 @@ export default class Board {
       }
     };
 
-    const renderLoadMoreButton = (array = tasks) => {
-      if (startCardsAmount >= array.length) {
+    const renderLoadMoreButton = (array) => {
+      if (visibleTasks >= array.length) {
         return;
       }
       render(container.getElement(), this._loadMoreButton.getElement(), RenderPosition.BEFOREEND);
+      const onShowMoreTasksButtonClick = () => {
+        let tasksToShow = RENDER_COUNT - visibleTasks;
+        visibleTasks += tasksToShow > 8 ? 8 : tasksToShow;
+        taskListElement.innerHTML = ``;
+        array.slice(0, visibleTasks).forEach((task) => renderTask(taskListElement, task));
+        if (visibleTasks === RENDER_COUNT) {
+          remove(this._loadMoreButton);
+        }
+      };
+      this._loadMoreButton.setClickHandler(onShowMoreTasksButtonClick);
     };
 
-    const onShowMoreTasksButtonClick = (sortedTasks) => {
-      let tasksToShow = RENDER_COUNT - visibleTasks;
-      visibleTasks += tasksToShow > 8 ? 8 : tasksToShow;
-      taskListElement.innerHTML = ``;
-      sortedTasks.slice(0, visibleTasks).forEach((task) => renderTask(taskListElement, task));
-      if (visibleTasks === RENDER_COUNT) {
-        remove(this._loadMoreButton);
-      }
-    };
-    const onShowMoreTasksButtonClickBind = onShowMoreTasksButtonClick.bind(null, tasks);
-    this._loadMoreButton.setClickHandler(onShowMoreTasksButtonClickBind);
     checkTasksStatus(tasks);
     tasks.slice(0, visibleTasks).forEach((task) => renderTask(taskListElement, task));
-    renderLoadMoreButton();
+    renderLoadMoreButton(tasks);
 
 
     this._sort.setSortTypeChangeHandler((sortType) => {
-      this._loadMoreButton.removeClickHandler(onShowMoreTasksButtonClickBind);
       let sortedTasks = [];
       switch (sortType) {
         case SortType.DATE_UP:
@@ -99,17 +100,11 @@ export default class Board {
           sortedTasks = tasks.slice();
           break;
       }
-      const updateClickHanlder = () => {
-        const onShowMoreTasksButtonClickBindSorted = onShowMoreTasksButtonClick.bind(null, sortedTasks);
-        this._loadMoreButton.removeClickHandler(onShowMoreTasksButtonClickBindSorted);
-        remove(this._loadMoreButton);
-        renderLoadMoreButton(sortedTasks);
-        taskListElement.innerHTML = ``;
-        visibleTasks = 8;
-        sortedTasks.slice(0, visibleTasks).forEach((task) => renderTask(taskListElement, task));
-        this._loadMoreButton.setClickHandler(onShowMoreTasksButtonClickBindSorted);
-      };
-      updateClickHanlder();
+      remove(this._loadMoreButton);
+      taskListElement.innerHTML = ``;
+      visibleTasks = 8;
+      renderTasks(taskListElement, sortedTasks.slice(0, visibleTasks));
+      renderLoadMoreButton(sortedTasks);
     });
   }
 }
