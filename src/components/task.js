@@ -22,7 +22,9 @@ const createTaskTemplate = (task) => {
     tags,
     dueDate,
     color,
-    repeatingDays
+    repeatingDays,
+    isArchive,
+    isFavorite
   } = task;
 
   const isExpired = dueDate instanceof Date && dueDate < Date.now();
@@ -33,7 +35,8 @@ const createTaskTemplate = (task) => {
   const hashtags = createHashtagsMarkup(Array.from(tags));
   const repeatClass = Object.values(repeatingDays).some(Boolean) ? `card--repeat` : ``;
   const deadlineClass = isExpired ? `card--deadline` : ``;
-
+  const disabledArchiveClass = isArchive ? `card__btn--disabled` : ``;
+  const disabledFavoriteClass = isFavorite ? `card__btn--disabled` : ``;
   return (
     `<article class="card card--${color} ${repeatClass} ${deadlineClass}">
       <div class="card__form">
@@ -42,12 +45,12 @@ const createTaskTemplate = (task) => {
             <button type="button" class="card__btn card__btn--edit">
               edit
             </button>
-            <button type="button" class="card__btn card__btn--archive">
+            <button type="button" class="card__btn card__btn--archive ${disabledArchiveClass}">
               archive
             </button>
             <button
               type="button"
-              class="card__btn card__btn--favorites card__btn--disabled"
+              class="card__btn card__btn--favorites ${disabledFavoriteClass}"
             >
               favorites
             </button>
@@ -95,9 +98,17 @@ export default class Task extends AbstractComponent {
     this.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, handler);
   }
   setArchiveButtonClickHandler(handler) {
-    this.getElement().querySelector(`.card__btn--archive`).addEventListener(`click`, handler);
+    const archiveButton = this.getElement().querySelector(`.card__btn--archive`);
+    archiveButton.addEventListener(`click`, () => {
+      handler();
+      archiveButton.classList.toggle(`.card__btn--disabled`);
+    });
   }
   setFavoritesButtonClickHandler(handler) {
-    this.getElement().querySelector(`.card__btn--favorites`).addEventListener(`click`, handler);
+    const favoriteButton = this.getElement().querySelector(`.card__btn--favorites`);
+    favoriteButton.addEventListener(`click`, () => {
+      handler();
+      favoriteButton.classList.toggle(`.card__btn--disabled`);
+    });
   }
 }

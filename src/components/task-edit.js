@@ -1,6 +1,6 @@
 import {colors, days} from '../const.js';
 import {formatTime, formatDate} from '../utils/common.js';
-import AbstractSmartComponent from './abstract-smart-comopnent.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
@@ -190,9 +190,12 @@ const createTaskEditTemplate = (task, options = {}) => {
 
 
 export default class TaskEdit extends AbstractSmartComponent {
-  constructor(task) {
+  constructor(task, _replaceEditToTask, taskComponent, taskContoller) {
     super();
     this._task = task;
+    this._replaceEditToTask = _replaceEditToTask;
+    this._taskComponent = taskComponent;
+    this._taskController = taskContoller;
     this._isDateShowing = !!task.dueDate;
     this._isRepeatingTask = Object.values(task.repeatingDays).some(Boolean);
     this._activeRepeatingDays = Object.assign({}, task.repeatingDays);
@@ -207,9 +210,6 @@ export default class TaskEdit extends AbstractSmartComponent {
       isRepeatingTask: this._isRepeatingTask,
       activeRepeatingDays: this._activeRepeatingDays,
     });
-  }
-  setSubmitButtonClickHandler(handler) {
-    this.getElement().querySelector(`form`).addEventListener(`submit`, handler);
   }
   recoveryListeners() {
     this._subscribeOnEvents();
@@ -243,13 +243,24 @@ export default class TaskEdit extends AbstractSmartComponent {
       });
     }
   }
+  updateTask() {
+    if (this._isDateShowing) {
+      const weekDays = this._taskComponent._task.repeatingDays;
+      for (let key of Object.keys(weekDays)) {
+        weekDays[key] = false;
+      }
+    } else {
+      this._taskComponent._task.repeatingDays = Object.assign({}, this._activeRepeatingDays);
+    }
+    this._taskComponent._task.dueDate = this._flatpickr ? this._flatpickr.latestSelectedDateObj : null;
+    return this._taskComponent._task;
+  }
   _subscribeOnEvents() {
     const element = this.getElement();
 
     element.querySelector(`.card__date-deadline-toggle`)
       .addEventListener(`click`, () => {
         this._isDateShowing = !this._isDateShowing;
-
         this.rerender();
       });
 
@@ -268,5 +279,10 @@ export default class TaskEdit extends AbstractSmartComponent {
         this.rerender();
       });
     }
+    this.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
+      evt.preventDefault();
+      this._taskController.render(this.updateTask());
+      this._replaceEditToTask();
+    });
   }
 }

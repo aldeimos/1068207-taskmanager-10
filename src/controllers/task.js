@@ -30,17 +30,13 @@ export default class Task {
     const oldTaskEditComponent = this._taskEditComponent;
 
     this._taskComponent = new TaskComponent(task);
-    this._taskEditComponent = new TaskEditComponent(task);
-
-    const onEditButtonClickHanlder = () => {
+    this._taskEditComponent = new TaskEditComponent(task, this._replaceEditToTask.bind(this), this._taskComponent, this);
+    const EditButtonClickHanlder = () => {
       this._replaceTaskToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     };
 
-    this._taskComponent.setEditButtonClickHandler(onEditButtonClickHanlder);
-
-    this._taskEditComponent.setSubmitButtonClickHandler(() => this._replaceEditToTask());
-
+    this._taskComponent.setEditButtonClickHandler(EditButtonClickHanlder);
     this._taskComponent.setArchiveButtonClickHandler(() => {
       this._onDataChange(this, task, Object.assign({}, task, {
         isArchive: !task.isArchive,
@@ -70,13 +66,12 @@ export default class Task {
 
     if (isEscKey) {
 
-      this._replaceEditToTask();
+      this._onViewChange();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
   _replaceEditToTask() {
-    this._taskEditComponent.reset(); // Эта строчка кидает ошибку в консоль. Если открыть карточку, потом нажать на Edit другой карточки и закрыть ее через эскейп, то получается ошибка.
-
+  /* this._taskEditComponent.reset(); */
     replace(this._taskComponent, this._taskEditComponent);
     this._mode = Mode.DEFAULT;
   }
